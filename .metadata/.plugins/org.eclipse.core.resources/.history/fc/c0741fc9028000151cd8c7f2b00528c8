@@ -1,0 +1,181 @@
+package sorts;
+
+import java.util.Arrays;
+
+public class Sorts{
+
+	public static <T extends Comparable <? super T>> void bubbleSort (T[] arr) {
+		if (arr == null){
+			throw new IllegalArgumentException();
+		}
+		int length = arr.length;
+		for (int i = 1; i < length; i++){
+			for (int j = 0; j < i; j++){
+				if (arr[j].compareTo(arr[i]) >= 0){
+					T temp = arr[j];
+					arr[j] = arr[i];
+					arr[i] = temp;
+				}
+			}
+		}
+	}
+	
+	public static <T extends Comparable <? super T>> void insertionSort (T[] arr) {
+		int length = arr.length;
+		for (int i = 1; i < length; ++i) {
+			T key = arr[i];
+			int j = i - 1;
+			while ((j >= 0) && (key.compareTo(arr[j])) < 0) {
+				arr[j + 1] = arr[j];
+				--j;
+			}
+			arr[j + 1] = key;
+		}
+	}
+	
+	public static <T extends Comparable <? super T>> void selectionSort (T[] arr) {
+		int length = arr.length;
+		if (arr == null)
+			throw new IllegalArgumentException();
+
+		for (int i = 0; i < length; i++) {
+			int index = i;
+			T min = arr[i];
+			for (int j = i; j < length; j++) {
+				if (arr[j].compareTo(min) < 0){
+					min = arr[j];
+					index = j;
+				}
+			}
+			arr[index] = arr[i];
+			arr[i] = min;
+		}
+	}
+	
+	private static <T extends Comparable <? super T>> void merge (T[] arr, int lowerBound, int upperBound, int middle){
+		
+		T[] arrSorted = (T[]) new Object[upperBound - lowerBound + 1];
+		// merge can only be applied to an array for which each half of the array is sorted
+		// middle = index of last element of first half of array
+		// upperBound = index of last element of array
+		int index1 = lowerBound;
+		int index2 = middle + 1;
+		int counter = 0;
+
+		if (upperBound - index1 == 1){
+			if (arr[index1].compareTo(arr[upperBound]) <= 0)
+				return;
+			else {
+				T temp = arr[index1];
+				arr[index1] = arr[upperBound];
+				arr[upperBound] = temp;
+				return;
+			}	
+		} else {
+			//counter might not take care of itself.
+			while (index1 <= middle + 1 && index2 <= upperBound + 1 && counter < arrSorted.length){
+				if (index1 == middle + 1){
+					arrSorted[counter] = arr[index2];
+					index2++;
+				} else if (index2 == upperBound + 1){
+					arrSorted[counter] = arr[index1];
+					index1++;
+				} else if (arr[index1].compareTo(arr[index2]) <= 0){
+					arrSorted[counter] = arr[index1];
+					index1++;
+				} else if (arr[index1].compareTo(arr[index2]) > 0){
+					arrSorted[counter] = arr[index2];
+					index2++;
+				}
+				counter++;
+			}
+		}
+
+		for (int i = 0; i < arrSorted.length; i++)
+			arr[i + lowerBound] = arrSorted[i];
+
+	}
+
+	public static <T extends Comparable <? super T>> void mergeSort (T[] arr, int lowerBound, int upperBound){
+		if (arr == null){
+			throw new IllegalArgumentException();}
+		else{
+			//Step 1: Find the midpoint of the subarray
+			int mid = lowerBound + (upperBound - lowerBound)/2;
+			//Step 2: Recursively sort the two halves
+			if (upperBound - lowerBound != 0){
+				mergeSort (arr, lowerBound, mid);
+				mergeSort (arr, mid + 1, upperBound);
+				//Step3: Merge
+				merge (arr, lowerBound, upperBound, mid);
+			}
+		}
+
+	}
+	
+	public static <T extends Comparable <? super T>> void quickSort (T[] arr, int lowerBound, int upperBound){
+		if (arr == null)
+			throw new IllegalArgumentException();
+
+		if (lowerBound < upperBound){
+
+			int lo = lowerBound;
+			int hi = upperBound;
+			int mid = lo + (hi- lo)/2;
+			int pivot;
+
+			if (arr[lo].compareTo(arr[mid]) > 0){
+				if (arr[mid].compareTo(arr[hi]) >= 0)
+					pivot = mid;
+				else if (arr[hi].compareTo(arr[lo]) < 0)
+					pivot = hi;
+				else 
+					pivot = lo;
+			} else if (arr[lo].compareTo(arr[mid]) < 0){
+				if (arr[lo].compareTo(arr[hi]) >= 0)
+					pivot = lo;
+				else if (arr[hi].compareTo(arr[mid]) > 0)
+					pivot = mid;
+				else 
+					pivot = hi;
+			} else {
+				pivot = mid;
+			}
+
+			if (upperBound - lowerBound == 1 && arr[lowerBound].compareTo(arr [upperBound]) > 0){
+				T temp3 = arr[upperBound];
+				arr[upperBound] = arr[lowerBound];
+				arr[lowerBound] = temp3;
+			} else {
+				T temp = arr[pivot];
+				arr[pivot] = arr[upperBound];
+				arr[upperBound] = temp;
+				hi--;
+				while (lo < hi){
+					if (arr[lo].compareTo(temp) > 0){
+						if (arr[hi].compareTo(temp) < 0){
+							T temp2 = arr[lo];
+							arr[lo] = arr[hi];
+							arr[hi] = temp2;
+						} else 
+							hi--;
+					} else 
+						lo++;	
+				}
+				temp = arr[lo];
+				arr[lo] = arr[upperBound];
+				arr[upperBound] = temp;
+
+				quickSort(arr, lowerBound, lo - 1);
+				quickSort(arr, lo + 1, upperBound);
+			}
+		}
+	}
+	
+	public static void main (String[] args){
+		Integer[] arr = {10, 8, 7, 9, 1, 2, 5, 3, 6 ,4};
+		insertionSort(arr);
+		System.out.println(Arrays.toString(arr));
+	}
+
+}
